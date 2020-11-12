@@ -85,6 +85,7 @@ M = 9;
 Ncoef = 31;
 %Impulse response for M filter banks
 h = zeros(Ncoef,M);
+Nf = round((T/M)*fs);
 
 Nfft = length(s_ant1);
 ff = (-Nfft/2:Nfft/2-1)*fs/Nfft;
@@ -98,7 +99,7 @@ for i = 0:M-1
     S(i+1,:) = fftshift(fft(s_filtered4(i+1,:)));
 end
 
-CHECK = 0;
+CHECK = 1;
 if CHECK == 1
     figure
     plot(ff,abs(fftshift(fft(s_ant4))));
@@ -108,12 +109,15 @@ if CHECK == 1
     plot(ff,(abs(sum(S,1))));
     % plot(real(sum(s_filtered4,1)));
 
-    Hf = sum(S,1);
-    aHf = 20*log10(abs(Hf));
+    Hf = fftshift(fft(h,1024,1),1);
+    Nfft = 1024;
+    ff = (-Nfft/2:Nfft/2-1)*fs/Nfft;
+    tHf = sum(Hf,2);
+    aHf = 20*log10(abs(tHf));
     figure
     plot(ff,aHf, '-r');
     hold on
-    plot(ff,20*log10(abs(S)));
+    plot(ff,20*log10(abs(Hf)));
     grid on
     hold off
 end
